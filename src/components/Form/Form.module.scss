@@ -1,0 +1,22 @@
+.Form {
+  display: flex;
+  flex-flow: row wrap;
+
+  &Input {
+    display: flex;
+
+    &Text,
+    &Group {
+      width: 100%;
+      margin-bottom: 10px;
+    }
+
+    &Label:not(:last-of-type) {
+      margin-right: 15px;
+    }
+
+    &Submit {
+      margin-right: 5px;
+    }
+  }
+}

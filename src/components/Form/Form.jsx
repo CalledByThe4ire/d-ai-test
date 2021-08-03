@@ -1,84 +1,104 @@
-import React, { useState, useEffect } from 'react';
-import PropTypes from 'prop-types';
+import React, { useState } from 'react';
+import styles from './Form.module.scss';
 
 const initialState = {
   text: '',
-  gender: '',
+  gender: 'Male',
 };
 
 const Form = () => {
-  const [inputValue, setInputValue] = useState('');
-  const [formData, setFormData] = useState(initialState);
+  const [formData, setFormData] = useState(
+    JSON.parse(window.localStorage.getItem('formData')) ?? initialState
+  );
+  const [, setInputTextValue] = useState(formData.text);
 
-  useEffect(() => {
-    window.localStorage.setItem('formData', JSON.stringify(formData));
-  }, [formData]);
-
-  const handleChange = ({ target: { value } }) => {
-    setInputValue(value);
+  const handleInputTextChange = ({ target: { value } }) => {
+    setFormData({ ...formData, text: value });
+    setInputTextValue(value);
   };
 
-  const handleSubmit = (evt) => {
+  const handleInputRadioChange = ({ target: { value } }) => {
+    setFormData({ ...formData, gender: value });
+  };
+
+  const handleFormSubmit = (evt) => {
     evt.preventDefault();
 
     const { target } = evt;
     const formData = Object.fromEntries(new FormData(target));
 
     window.localStorage.setItem('formData', JSON.stringify(formData));
-
-    setFormData(formData);
-
-    console.log(formData);
   };
 
-  const handleClick = (evt) => {
+  const handleLoadButtonClick = (evt) => {
     evt.preventDefault();
 
-    setFormData(initialState);
-    window.localStorage.setItem('formData', JSON.stringify(formData));
-    console.log(formData);
+    setFormData(JSON.parse(window.localStorage.getItem('formData')));
   };
 
   return (
-    <form className="app__form form" onSubmit={handleSubmit}>
+    <form className={styles.Form} onSubmit={handleFormSubmit}>
       <input
         type="text"
         name="text"
-        className="form__input"
-        onChange={handleChange}
-        value={inputValue}
+        className={styles.FormInputText}
+        onChange={handleInputTextChange}
+        value={formData.text}
+        placeholder="Start typing…"
       />
 
-      <div className="form__group form-group">
+      <div className={styles.FormInputGroup}>
         <input
           type="radio"
-          className="form-group__radio"
-          value="Male"
+          id="gender-male"
+          className={styles.FormInputRadio}
+          value="male"
+          checked={formData.gender === 'male'}
+          onChange={handleInputRadioChange}
           name="gender"
-        />{' '}
-        Male
+        />
+        <label htmlFor="gender-male" className={styles.FormInputLabel}>
+          Male
+        </label>
         <input
           type="radio"
-          className="form-group__radio"
-          value="Female"
+          id="gender-female"
+          className={styles.FormInputRadio}
+          value="female"
+          checked={formData.gender === 'female'}
+          onChange={handleInputRadioChange}
           name="gender"
-        />{' '}
-        Female
+        />
+        <label htmlFor="gender-female" className={styles.FormInputLabel}>
+          Female
+        </label>
         <input
           type="radio"
-          className="form-group__radio"
-          value="Other"
+          id="gender-other"
+          className={styles.FormInputRadio}
+          value="other"
+          checked={formData.gender === 'other'}
+          onChange={handleInputRadioChange}
           name="gender"
-        />{' '}
-        Other
+        />
+        <label htmlFor="gender-other" className={styles.FormInputLabel}>
+          Other
+        </label>
       </div>
 
-      <input type="submit" onSubmit={handleSubmit} />
-      <input type="reset" onClick={handleClick} />
+      <input
+        type="submit"
+        className={styles.FormInputSubmit}
+        onSubmit={handleFormSubmit}
+      />
+      <input
+        type="button"
+        className={styles.FormInputReset}
+        value="Load"
+        onClick={handleLoadButtonClick}
+      />
     </form>
   );
 };
-
-Form.propTypes = {};
 
 export default Form;
